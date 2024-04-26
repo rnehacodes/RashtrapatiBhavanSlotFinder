@@ -6,34 +6,58 @@ import time
 
 #Open the website in chrome
 website = 'https://visit.rashtrapatibhavan.gov.in/plan-visit/rb-main-building/nR/jR'
-driver = webdriver.Chrome()
-driver.get(website)
+openWebsite(website)
 
-#Get the year value from the year selected by default i.e. current year
-current_year = getSelectedYear(driver)
+year_count = 0
+#Get the year values from the year dropdown
+years = getYears()
 
-#Get the months available
-months = getMonths(driver)
+#For every year, select the different months and find the subsequent dates on which the slot is available
+for current_year in years :
+    #For the first year, pick the year selected by default. Afterwards, select the other years available in the dropdown.
+    if year_count > 0:
+        selectNextYear(year_count)
+    year = current_year.text
+    year_count+=1
 
-#Get the month from the month selected by default i.e. current month
-selected_month = getSelectedMonth(driver)
+    #Get the months available
+    month_count = 0
+    months = getMonths()
 
-#Print the dates having open slots in the current(by default selected month)
-dates = findAvailableDates(driver)
-for date in dates :
-    print(date.text + " " + selected_month.text+ " " + current_year.text)
+    #For every month, select the different dates on which the slot is available
+    for current_month in months:
+        #For the first month, pick the month selected by default. Afterwards, select the other months available in the dropdown.
+        # if month_count > 0:
+        #     selectNextMonth(month_count)
+        #     current_month = getSelectedMonth()
+        selectNextMonth(month_count)
+        current_month = getSelectedMonth()
+        #Get the month from the month selected by default i.e. current month
+        month = current_month.text
+        month_count+=1
 
-#Traverse through every month and fetch the available dates
-
-
-#select the next month
-##Click on the month dropdown
-select_month = Select(driver.find_element(By.CLASS_NAME, 'ui-datepicker-month'))
-
-# Select next month option by index
-select_month.select_by_index(1)
-selected_month = driver.find_element(By.XPATH, "//select[@data-handler='selectMonth']/option[@selected='selected']")
-
-print(selected_month.text)
+        #Print the dates having open slots in the current(by default selected month)
+        date_count = 0
+        dates = findAvailableDates()
+        for i in range(len(dates)):  # Iterate through the dates by index
+            date = dates[i]  # Get the date element at the current index
+            dateValue = date.text
+            print("Date : " + dateValue + " " + month + " " + year)
+            selectDate(dateValue)
+            time.sleep(2)
+            slots = findAvailableSlots()
+            for i in range(len(slots)):
+                slot = slots[i]
+                slotValue = slot.text
+                slotTime, slotSeats = slotValue.split('\n')
+                # Format the parts into the desired format
+                # slotValue = f"Time : {slotTime} & Seats : {slotSeats}"
+                print(f"Time : {slotTime} & Seats : {slotSeats}")
+                slots = findAvailableSlots()
+            print("\n")
+            dates = findAvailableDates()
+            
+            
+        
 
 driver.quit()

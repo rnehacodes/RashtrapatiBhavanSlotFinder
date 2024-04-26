@@ -1,1 +1,0 @@
-This is a project to help people find available slots for Rashtrapati Bhavan visit. Once registered users can get notified of the available slots with days, timings and number of slots available.
